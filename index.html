@@ -654,6 +654,7 @@ function helloWorld() {
                     <div class="btn-group">
                         <button id="preview-scroll-top"  title="Scroll preview to top"><i data-lucide="chevrons-up"></i></button>
                         <button id="preview-sync-caret"  title="Sync preview to editor cursor"><i data-lucide="arrow-up-down"></i></button>
+                        <button id="preview-copy-rich"   title="Copy preview to clipboard (with formatting)"><i data-lucide="clipboard"></i></button>
                     </div>
                 </div>
             </div>
@@ -820,6 +821,8 @@ function helloWorld() {
             previewWrapper.scrollTop = getCaretFraction() * (previewWrapper.scrollHeight - previewWrapper.clientHeight);
         });
 
+        document.getElementById('preview-copy-rich').addEventListener('click', copyPreviewRich);
+
         function getCaretFraction() {
             const line  = editor.value.substring(0, editor.selectionStart).split('\n').length;
             const total = editor.value.split('\n').length;
@@ -966,6 +969,36 @@ function helloWorld() {
             navigator.clipboard.writeText(getFullHtml())
                 .then(() => alert('HTML copied to clipboard!'))
                 .catch(err => console.error('Error copying HTML:', err));
+        }
+
+        function copyPreviewRich() {
+            const btn = document.getElementById('preview-copy-rich');
+            const clone = preview.cloneNode(true);
+
+            // Replace MathJax-rendered containers with original LaTeX so rich editors don't mangle them
+            const mathItems = window.MathJax?.startup?.document?.math;
+            if (mathItems) {
+                const containers = Array.from(clone.querySelectorAll('mjx-container'));
+                Array.from(mathItems).forEach((item, i) => {
+                    if (containers[i]) {
+                        const [open, close] = item.display ? ['\\[', '\\]'] : ['\\(', '\\)'];
+                        containers[i].replaceWith(document.createTextNode(`${open}${item.math}${close}`));
+                    }
+                });
+            }
+
+            const clipItem = new ClipboardItem({
+                'text/html':  new Blob([clone.innerHTML],   { type: 'text/html' }),
+                'text/plain': new Blob([preview.innerText], { type: 'text/plain' }),
+            });
+            navigator.clipboard.write([clipItem]).then(() => {
+                btn.innerHTML = '<i data-lucide="check"></i>';
+                lucide.createIcons({ nodes: [btn] });
+                setTimeout(() => {
+                    btn.innerHTML = '<i data-lucide="clipboard"></i>';
+                    lucide.createIcons({ nodes: [btn] });
+                }, 1500);
+            }).catch(err => console.error('Copy failed:', err));
         }
 
         function downloadHtml() {
