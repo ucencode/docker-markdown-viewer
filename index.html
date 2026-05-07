@@ -1082,8 +1082,10 @@ ${preview.innerHTML}
 </html>`;
         }
 
-        // Load saved theme
-        if (localStorage.getItem('dark_theme') === 'true') {
+        // Load saved theme, fall back to system preference
+        const savedTheme = localStorage.getItem('dark_theme');
+        const prefersDark = savedTheme !== null ? savedTheme === 'true' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) {
             document.body.classList.add('dark-theme');
             themeToggle.textContent = 'Light';
         }
