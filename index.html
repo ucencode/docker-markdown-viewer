@@ -301,10 +301,36 @@
             border: 1px solid var(--border);
             border-radius: 6px;
             overflow: auto;
+            margin: 0;
+        }
+
+        .code-block-wrapper {
+            position: relative;
             margin: 1em 0;
         }
 
-        #preview pre code.hljs { display: block; min-width: max-content; border-radius: 5px; font-size: 0.875em; padding: 14px 16px; }
+        .copy-code-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 6px;
+            font-size: 11px;
+            line-height: 1;
+            background: rgba(0, 0, 0, 0.25);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.15s, background 0.15s;
+            backdrop-filter: blur(4px);
+        }
+
+        .copy-code-btn svg.lucide { width: 12px; height: 12px; }
+        .code-block-wrapper:hover .copy-code-btn { opacity: 1; }
+        .copy-code-btn:hover { background: rgba(0, 0, 0, 0.5); color: #fff; border-color: transparent; }
+
+        #preview pre code.hljs { display: block; min-width: max-content; border-radius: 5px; font-size: 0.875em; padding: 14px 16px; background: var(--bg) !important; }
 
         #preview blockquote {
             margin: 1em 0;
@@ -900,6 +926,28 @@ function helloWorld() {
             preview.innerHTML = marked.parse(editor.value);
             document.querySelectorAll('pre code').forEach((block) => {
                 hljs.highlightElement(block);
+
+                const pre = block.parentElement;
+                const wrapper = document.createElement('div');
+                wrapper.className = 'code-block-wrapper';
+                pre.parentElement.insertBefore(wrapper, pre);
+                wrapper.appendChild(pre);
+
+                const btn = document.createElement('button');
+                btn.className = 'copy-code-btn';
+                btn.innerHTML = '<i data-lucide="copy"></i>';
+                btn.addEventListener('click', () => {
+                    navigator.clipboard.writeText(block.innerText).then(() => {
+                        btn.innerHTML = '<i data-lucide="check"></i>';
+                        lucide.createIcons({ nodes: [btn] });
+                        setTimeout(() => {
+                            btn.innerHTML = '<i data-lucide="copy"></i>';
+                            lucide.createIcons({ nodes: [btn] });
+                        }, 1500);
+                    });
+                });
+                wrapper.appendChild(btn);
+                lucide.createIcons({ nodes: [btn] });
             });
             if (window.MathJax?.typesetPromise) {
                 MathJax.typesetPromise([preview]).then(updateCaretIndicator);
