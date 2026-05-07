@@ -40,7 +40,7 @@
         .tools-handle svg.lucide { width: 13px; height: 13px; }
         .zen-exit svg.lucide { width: 13px; height: 13px; }
         .chip-del svg.lucide { width: 10px; height: 10px; }
-        #theme-toggle svg.lucide { width: 15px; height: 15px; }
+        #theme-toggle svg.lucide, #dual-mode-btn svg.lucide { width: 15px; height: 15px; }
 
         :root {
             --bg: #f4f4f4;
@@ -590,7 +590,7 @@
             <button id="mobile-preview-btn">Preview</button>
         </div>
         <div class="topbar-actions">
-            <button id="dual-mode-btn" title="Toggle split view (available at 768px+)">Dual</button>
+            <button id="dual-mode-btn" title="Toggle split view (available at desktop)"><i data-lucide="columns-2"></i></button>
             <button id="reader-zen-btn" title="Distraction-free reading (Esc to exit)">Reader Zen</button>
             <button id="theme-toggle" title="Toggle theme"><span id="theme-icon-wrap"><i data-lucide="moon"></i></span></button>
         </div>
@@ -602,8 +602,8 @@
                 <div class="pane-actions">
                     <!-- future zen buttons go here as another .btn-group -->
                     <div class="btn-group">
-                        <button id="editor-scroll-top"   title="Scroll editor to top"><i data-lucide="chevrons-up"></i></button>
-                        <button id="editor-scroll-caret" title="Scroll editor to text cursor"><i data-lucide="crosshair"></i></button>
+                        <button id="editor-scroll-top"   title="Go to top"><i data-lucide="chevrons-up"></i></button>
+                        <button id="editor-scroll-caret" title="Go to text cursor"><i data-lucide="text-cursor"></i></button>
                     </div>
                 </div>
             </div>
@@ -652,9 +652,9 @@ function helloWorld() {
             <div class="pane-label">Preview
                 <div class="pane-actions">
                     <div class="btn-group">
-                        <button id="preview-scroll-top"  title="Scroll preview to top"><i data-lucide="chevrons-up"></i></button>
-                        <button id="preview-sync-caret"  title="Sync preview to editor cursor"><i data-lucide="arrow-up-down"></i></button>
-                        <button id="preview-copy-rich"   title="Copy preview to clipboard (with formatting)"><i data-lucide="clipboard"></i></button>
+                        <button id="preview-scroll-top"  title="Go to top"><i data-lucide="chevrons-up"></i></button>
+                        <button id="preview-sync-caret"  title="Go to editor cursor"><i data-lucide="file-input"></i></button>
+                        <button id="preview-copy-rich"   title="Copy preview to clipboard"><i data-lucide="clipboard"></i></button>
                     </div>
                 </div>
             </div>
@@ -811,6 +811,7 @@ function helloWorld() {
 
         document.getElementById('editor-scroll-caret').addEventListener('click', () => {
             editor.scrollTop = getCaretFraction() * (editor.scrollHeight - editor.clientHeight);
+            editor.focus();
         });
 
         document.getElementById('preview-scroll-top').addEventListener('click', () => {
@@ -832,7 +833,8 @@ function helloWorld() {
         function enterZenMode() {
             document.body.classList.add('writer-zen');
             document.body.classList.remove('reader-zen');
-            dualModeBtn.textContent = 'Dual';
+            dualModeBtn.innerHTML = '<i data-lucide="columns-2"></i>';
+            lucide.createIcons({ nodes: [dualModeBtn] });
             dualModeBtn.classList.remove('active');
             readerZenBtn.classList.remove('active');
             localStorage.setItem('viewerMode', 'zen');
@@ -841,7 +843,8 @@ function helloWorld() {
 
         function enterDualMode() {
             document.body.classList.remove('writer-zen', 'reader-zen');
-            dualModeBtn.textContent = 'Zen';
+            dualModeBtn.innerHTML = '<i data-lucide="columns-2"></i>';
+            lucide.createIcons({ nodes: [dualModeBtn] });
             dualModeBtn.classList.add('active');
             readerZenBtn.classList.remove('active');
             localStorage.setItem('viewerMode', 'dual');
