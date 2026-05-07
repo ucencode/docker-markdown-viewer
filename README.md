@@ -5,11 +5,15 @@ An over-engineered Markdown viewer packaged as a Docker container.
 ## Features
 
 - Real-time Markdown preview with syntax highlighting
+- MathJax support for inline `\(...\)` and block `\[...\]` math
 - Dark mode toggle
-- Auto-save functionality
-- Multiple document management
-- Export to HTML
-- Responsive design
+- Auto-save with unsaved-changes indicator
+- Multiple document management with named saves
+- Export to HTML (copy or download)
+- Writer Zen and Reader Zen distraction-free modes
+- Scroll navigation buttons in each pane label:
+  - **Editor**: scroll to top, scroll to text cursor
+  - **Preview**: scroll to top, sync to editor cursor (dual mode only)
 
 ## Getting Started
 
@@ -84,11 +88,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - [Marked.js](https://marked.js.org/) for Markdown parsing
 - [Highlight.js](https://highlightjs.org/) for code syntax highlighting
+- [MathJax](https://www.mathjax.org/) for math rendering
 - [Nginx](https://nginx.org/) for serving the static content
-
-## Roadmap
-
-- Add Markdown file upload functionality
-- Implement collaborative editing
-- Add support for custom themes
-- Add export to PDF functionality
