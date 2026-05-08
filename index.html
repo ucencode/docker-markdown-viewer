@@ -771,6 +771,71 @@ function helloWorld() {
     </div>
 
     <script>
+        function prettifyMathText(s) {
+            return s
+                // Greek lowercase
+                .replace(/\\alpha/g,'α').replace(/\\beta/g,'β').replace(/\\gamma/g,'γ')
+                .replace(/\\delta/g,'δ').replace(/\\varepsilon/g,'ε').replace(/\\epsilon/g,'ε')
+                .replace(/\\zeta/g,'ζ').replace(/\\eta/g,'η').replace(/\\vartheta/g,'ϑ')
+                .replace(/\\theta/g,'θ').replace(/\\iota/g,'ι').replace(/\\kappa/g,'κ')
+                .replace(/\\lambda/g,'λ').replace(/\\mu/g,'μ').replace(/\\nu/g,'ν')
+                .replace(/\\xi/g,'ξ').replace(/\\varpi/g,'ϖ').replace(/\\pi/g,'π')
+                .replace(/\\varrho/g,'ϱ').replace(/\\rho/g,'ρ').replace(/\\sigma/g,'σ')
+                .replace(/\\tau/g,'τ').replace(/\\upsilon/g,'υ').replace(/\\varphi/g,'φ')
+                .replace(/\\phi/g,'φ').replace(/\\chi/g,'χ').replace(/\\psi/g,'ψ')
+                .replace(/\\omega/g,'ω')
+                // Greek uppercase
+                .replace(/\\Gamma/g,'Γ').replace(/\\Delta/g,'Δ').replace(/\\Theta/g,'Θ')
+                .replace(/\\Lambda/g,'Λ').replace(/\\Xi/g,'Ξ').replace(/\\Pi/g,'Π')
+                .replace(/\\Sigma/g,'Σ').replace(/\\Upsilon/g,'Υ').replace(/\\Phi/g,'Φ')
+                .replace(/\\Psi/g,'Ψ').replace(/\\Omega/g,'Ω')
+                // Blackboard bold
+                .replace(/\\mathbb\{R\}/g,'ℝ').replace(/\\mathbb\{N\}/g,'ℕ')
+                .replace(/\\mathbb\{Z\}/g,'ℤ').replace(/\\mathbb\{Q\}/g,'ℚ')
+                .replace(/\\mathbb\{C\}/g,'ℂ')
+                // Relations
+                .replace(/\\leq/g,'≤').replace(/\\geq/g,'≥').replace(/\\neq/g,'≠')
+                .replace(/\\approx/g,'≈').replace(/\\equiv/g,'≡').replace(/\\sim/g,'∼')
+                .replace(/\\propto/g,'∝').replace(/\\ll/g,'≪').replace(/\\gg/g,'≫')
+                // Operators
+                .replace(/\\times/g,'×').replace(/\\cdot/g,'·').replace(/\\pm/g,'±')
+                .replace(/\\mp/g,'∓').replace(/\\div/g,'÷')
+                // Arrows
+                .replace(/\\leftrightarrow/g,'↔').replace(/\\Leftrightarrow/g,'⟺')
+                .replace(/\\Rightarrow/g,'⇒').replace(/\\Leftarrow/g,'⇐')
+                .replace(/\\rightarrow/g,'→').replace(/\\leftarrow/g,'←').replace(/\\to/g,'→')
+                // Sets / logic
+                .replace(/\\notin/g,'∉').replace(/\\in/g,'∈')
+                .replace(/\\subseteq/g,'⊆').replace(/\\supseteq/g,'⊇')
+                .replace(/\\subset/g,'⊂').replace(/\\supset/g,'⊃')
+                .replace(/\\cup/g,'∪').replace(/\\cap/g,'∩')
+                .replace(/\\forall/g,'∀').replace(/\\exists/g,'∃').replace(/\\emptyset/g,'∅')
+                // Misc
+                .replace(/\\infty/g,'∞').replace(/\\partial/g,'∂').replace(/\\nabla/g,'∇')
+                .replace(/\\sum/g,'∑').replace(/\\prod/g,'∏').replace(/\\int/g,'∫');
+        }
+
+        function tocLabelFromHeading(raw) {
+            let s = raw
+                .replace(/<[^>]+>/g, '')
+                .replace(/\\\[[\s\S]*?\\\]/g, m => m.slice(2, -2))
+                .replace(/\\\(.*?\\\)/g, m => m.slice(2, -2));
+            s = prettifyMathText(s);
+            return s
+                .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+                .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+                .replace(/\\sqrt\b/g, '√')
+                .replace(/\\text\{([^}]+)\}/g, '$1')
+                .replace(/\\math(?:bf|rm|it|cal|bb)\{([^}]+)\}/g, '$1')
+                .replace(/\\(?:left|right)[\[({|.]/g, '')
+                .replace(/\^(?:\{([^}]+)\}|(\S))/g, (_, b, c) => '^' + (b || c))
+                .replace(/_(?:\{([^}]+)\}|(\S))/g, (_, b, c) => '_' + (b || c))
+                .replace(/[{}]/g, '')
+                .replace(/\\/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
         function slugify(text) {
             return text.toLowerCase().replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-');
         }
@@ -1077,7 +1142,7 @@ function helloWorld() {
             }
 
             headings.forEach(h => {
-                const text = h.text.replace(/<[^>]+>/g, '');
+                const text = tocLabelFromHeading(h.text);
                 const id = slugify(text);
                 const item = document.createElement('a');
                 item.className = 'toc-item';
